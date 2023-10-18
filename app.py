@@ -16,7 +16,8 @@ cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 #MACHINE LEARNING
 #IMPORT DATA
-music_data = pd.read_csv("chords.csv")
+music_data_major = pd.read_csv("chords.csv")
+music_data_minor = pd.read_csv("chords_minor.csv")
 
 
 #API
@@ -25,9 +26,12 @@ def handle_request():
     
     input = str(request.args.get("input"))  #request the input
 
-    searching_inputs = [["tonality", "1ch", "1v"], ["tonality", "1ch", "1v", "2ch", "2v"], ["tonality", "1ch", "1v", "2ch", "2v", "3ch", "3v"] ]
-    searching_outputs = [["2ch", "2v"], ["3ch", "3v"], ["4ch", "4v"]]
+    music_index = int(input[0])
+    music_data_all = [music_data_major, music_data_minor]
+    music_data = music_data_all[music_index]
 
+    searching_inputs = [["1ch", "1v"], ["1ch", "1v", "2ch", "2v"], ["1ch", "1v", "2ch", "2v", "3ch", "3v"] ]
+    searching_outputs = [["2ch", "2v"], ["3ch", "3v"], ["4ch", "4v"]]
 
     data = []
     
@@ -37,10 +41,9 @@ def handle_request():
     else:
         #FINDING SECOND CHORD
         first_chord = input[1] + input[2]        
-        first_input = input
         
         #prepare data to right format
-        res1 = [eval(i) for i in first_input]
+        res1 = [eval(i) for i in first_chord]
 
         #input dataset
         X1 = music_data[searching_inputs[0]]
@@ -57,11 +60,10 @@ def handle_request():
         value11 = str(prediction1[0][0])
         value21 = str(prediction1[0][1])
         this_prediction1 = value11 + value21
-
             
             
         #FINDING THIRD CHORD     
-        second_input = input + this_prediction1
+        second_input = first_chord + this_prediction1
 
         #prepare data to right format
         res2 = [eval(i) for i in second_input]
@@ -80,13 +82,11 @@ def handle_request():
         prediction2 = model2.predict([ res2 ])
         value12 = str(prediction2[0][0])
         value22 = str(prediction2[0][1])
-        this_prediction2 = value12 + value22    
-            
-            
+        this_prediction2 = value12 + value22      
         
         
         #FINDING FOURTH CHORD     
-        third_input = input + this_prediction1 + this_prediction2
+        third_input = first_chord + this_prediction1 + this_prediction2
 
         #prepare data to right format
         res3 = [eval(i) for i in third_input]
