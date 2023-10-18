@@ -18,20 +18,6 @@ cors = CORS(app, resources={r"/*": {"origins": "*"}})
 #IMPORT DATA
 music_data = pd.read_csv("chords.csv")
 
-#CLEANING DATA
-#input dataset
-X = music_data.drop(columns=["ta", "tv"])
-
-#output dataset
-y = music_data.drop(columns=["pa", "pv"])
-
-model = DecisionTreeClassifier()
-
-#adding datasets to model (input, output)
-model.fit(X,y)
-
-
-
 
 #API
 @app.route('/', methods = ["GET", "POST"])
